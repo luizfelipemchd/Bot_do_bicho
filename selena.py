@@ -65,7 +65,7 @@ def matrix_results():
     # (var - 1) -> positions in the list // (var) -> positions in the xpath
     for r  in range(1, 8):
         for c in range(1, 7):
-            element = driver.find_element_by_xpath("/html/body/div[6]/div/div/div[2]/table/tbody/tr["+str(r)+"]/td["+str(c)+"]").text
+            element = driver.find_element_by_xpath("/html/body/div[5]/div/div/div[2]/table/tbody/tr["+str(r)+"]/td["+str(c)+"]").text
             matrix [r - 1][c - 1] = element
 
     day = driver.find_element_by_tag_name("caption").text
