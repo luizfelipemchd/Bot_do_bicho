@@ -16,10 +16,6 @@ auth.set_access_token(key, secret)
 
 api = tweepy.API(auth)
 
-FILE_NAME = "last_col_update.txt"
-
-
-
 class Animals(Enum):
     Avestruz = 1
     Aguia = 2
@@ -73,37 +69,18 @@ def matrix_results():
     
     return (matrix, day)
 
-def read_col(FILE_NAME):
-    file_read = open(FILE_NAME, 'r')
-    col_update = int(file_read.read().strip())
-    file_read.close()
-    return col_update
 
-def write_col(FILE_NAME, col):
-    file_write = open(FILE_NAME, 'w')
-    file_write.write(str(col))
-    file_write.close()
-
-
-def results_to_display(matrix, last_col):
+def results_to_display(matrix):
 
     winnin_nums =[ 0 for x in range(7)]
     type_of_game = ["PTM", "PT", "PTV", "PTN", "COR"]
     
-    col = -1
-
-    if(matrix[0][1] == "0000-0"): #in case of a new day
-        last_col = -1
-    
     for x in range(0, 6):
         if(matrix[0][x + 1] == "0000-0" and matrix[0][x] != "1º" and matrix[0][x] != "0000-0"):
-            col = x
-        if col > last_col:
             for y in range(0, 7):
-                winnin_nums[y] = matrix[y][col]
-            write_col(FILE_NAME, col)
-            return (winnin_nums, col, type_of_game[col - 1])
-    return ([], last_col, "")
+                winnin_nums[y] = matrix[y][x]
+            return (winnin_nums, type_of_game[x - 1])
+    return ([], "")
     
 def animals(winnin_num):
     divided_nums = winnin_num.split("-")
@@ -121,10 +98,12 @@ def put_it_in_a_tweet(winnin, type_of_game, day):
         
 ############################################################
 
-last_col = read_col(FILE_NAME)
 winnin = []
 matrix, day = matrix_results()
-winnin, last_col, type_of_game = results_to_display(matrix, last_col)
-print("executed")
-if(winnin):
+winnin, type_of_game = results_to_display(matrix)
+print("executing...")
+try:
     api.update_status(put_it_in_a_tweet(winnin, type_of_game, day))
+    print("results updated!")
+except:
+    print("results are up to date!")
