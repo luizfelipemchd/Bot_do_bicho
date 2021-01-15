@@ -124,6 +124,7 @@ def put_it_in_a_tweet(winnin, type_of_game, day):
 last_col = read_col(FILE_NAME)
 winnin = []
 matrix, day = matrix_results()
-winnin, last_col, type_of_game = results_to_display(matrix, last_col)   
+winnin, last_col, type_of_game = results_to_display(matrix, last_col)
+print("executed")
 if(winnin):
     api.update_status(put_it_in_a_tweet(winnin, type_of_game, day))
