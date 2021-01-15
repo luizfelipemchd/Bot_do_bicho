@@ -1,1 +1,1 @@
-web: python selena.py
+worker: python selena.py
