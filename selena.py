@@ -102,8 +102,9 @@ winnin = []
 matrix, day = matrix_results()
 winnin, type_of_game = results_to_display(matrix)
 print("executing...")
+print(put_it_in_a_tweet(winnin, type_of_game, day))
 try:
     api.update_status(put_it_in_a_tweet(winnin, type_of_game, day))
     print("results updated!")
-except:
-    print("results are up to date!")
+except tweepy.TweepError as e:
+    print(e.reason)
