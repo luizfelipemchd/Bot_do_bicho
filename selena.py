@@ -92,7 +92,7 @@ def animals(winnin_num):
 def put_it_in_a_tweet(winnin, type_of_game, day):
     message = day + '\n' + type_of_game + '\n'
     for y in range(0, 7):
-        message = message + str(y + 1) + ')' + winnin[y] + '(' + animals(winnin[y])+ ')' +'\n'
+        message = message + str(y + 1) + ') ' + winnin[y] + ' (' + animals(winnin[y])+ ')' +'\n'
     return message
     
         
@@ -101,10 +101,19 @@ def put_it_in_a_tweet(winnin, type_of_game, day):
 winnin = []
 matrix, day = matrix_results()
 winnin, type_of_game = results_to_display(matrix)
-print("executing...")
+
+latest_tweet = api.user_timeline(id=api.me().id, count=1)[0].text
+
+print("\nEXECUTING...\n")
 print(put_it_in_a_tweet(winnin, type_of_game, day))
-try:
-    api.update_status(put_it_in_a_tweet(winnin, type_of_game, day))
-    print("results updated!")
-except tweepy.TweepError as e:
-    print(e.reason)
+print("\n\n")
+
+if(latest_tweet.find(type_of_game) == -1):
+    try:
+        api.update_status(put_it_in_a_tweet(winnin, type_of_game, day))
+        print("\nRESULTS UPDATED!\n")
+    except tweepy.TweepError as e:
+        print("\nERROR:\n")
+        print(e.reason)
+else:
+    print("\nRESULTS ARE UP TO DATE\n")
