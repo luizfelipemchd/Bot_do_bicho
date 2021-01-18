@@ -52,15 +52,17 @@ def matrix_results():
     op.add_argument("--disable-dev-sh-usage")
 
     driver = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), chrome_options=op)
-
     driver.get("https://www.ojogodobicho.com/deu_no_poste.htm")
-    matrix = [[0 for x in range(8)] for y in range(8)]
 
-    matrix[0][6] = "0000-0" #to facilitate the stopping parameter
+    cols = len(driver.find_elements_by_xpath("/html/body/div[5]/div/div/div[2]/table/tbody/tr[1]/td"))
+    rows = len(driver.find_elements_by_xpath("/html/body/div[5]/div/div/div[2]/table/tbody/tr"))
+
+    matrix = [[0 for x in range(cols + 1)] for y in range(rows)]
+    matrix[0][cols] = "0000-0" #to facilitate the stopping parameter
 
     # (var - 1) -> positions in the list // (var) -> positions in the xpath
-    for r  in range(1, 8):
-        for c in range(1, 7):
+    for r  in range(1, rows + 1):
+        for c in range(1, cols + 1):
             element = driver.find_element_by_xpath("/html/body/div[5]/div/div/div[2]/table/tbody/tr["+str(r)+"]/td["+str(c)+"]").text
             matrix [r - 1][c - 1] = element
 
@@ -75,13 +77,14 @@ def results_to_display(matrix):
     winnin_nums =[ 0 for x in range(7)]
     type_of_game = ["PTM", "PT", "PTV", "PTN", "COR"]
     
-    for x in range(0, 6):
+    for x in range(len(matrix[0])):
         if(matrix[0][x + 1] == "0000-0" and matrix[0][x] != "1º" and matrix[0][x] != "0000-0"):
-            for y in range(0, 7):
+            for y in range(len(matrix)):
                 winnin_nums[y] = matrix[y][x]
             return (winnin_nums, type_of_game[x - 1])
     return ([], "")
     
+
 def animals(winnin_num):
     divided_nums = winnin_num.split("-")
     for bicho in Animals:
@@ -94,8 +97,23 @@ def put_it_in_a_tweet(winnin, type_of_game, day):
     for y in range(0, 7):
         message = message + str(y + 1) + ') ' + winnin[y] + ' (' + animals(winnin[y])+ ')' +'\n'
     return message
-    
-        
+
+
+def check_duplicated_tweets(string_of_tweet, type_of_game):
+    position = latest_tweet.find(type_of_game)
+
+    if(position == -1):
+        return True
+
+    string_test = ''
+
+    for y in range(3):
+        if( latest_tweet[position + y] != "\n"):
+            string_test += latest_tweet[position + y]
+
+    return (type_of_game != string_test)
+
+
 ############################################################
 
 winnin = []
@@ -108,7 +126,7 @@ print("\nEXECUTING...\n")
 print(put_it_in_a_tweet(winnin, type_of_game, day))
 print("\n\n")
 
-if(latest_tweet.find(type_of_game) == -1):
+if(check_duplicated_tweets(latest_tweet, type_of_game)):
     try:
         api.update_status(put_it_in_a_tweet(winnin, type_of_game, day))
         print("\nRESULTS UPDATED!\n")
