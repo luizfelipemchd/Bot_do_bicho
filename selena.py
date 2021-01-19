@@ -107,11 +107,10 @@ def check_duplicated_tweets(string_of_tweet, type_of_game):
 
     string_test = ''
 
-    for y in range(3):
+    for y in range(4):
         if( latest_tweet[position + y] != "\n"):
-            string_test += latest_tweet[position + y]
-
-    return (type_of_game != string_test)
+            return (type_of_game != string_test)
+        string_test += latest_tweet[position + y]
 
 
 ############################################################
